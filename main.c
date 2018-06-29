@@ -2,7 +2,6 @@
 #include "General.h"
 #include "Menu.h"
 #include "ArrayList.h"
-#include "Archivo.h"
 #include "MailingList.h"
 
 
@@ -21,10 +20,10 @@ int main()
                                            "\n  2. CARGAR LISTA NEGRA"
                                            "\n  3. DEPURAR"
                                            "\n  4. LISTAR"
-                                           "\n  5. lista 1"
-                                           "\n  6. lista 2"
-                                           "\n  7. lista 3"
-                                           "\n  0. Salir Del Programa"};
+                                           "\n  5. listar destinatarios"
+                                           "\n  6. listar blacklist"
+                                           "\n  7. listar depurados"
+                                           "\n  0. SALIR DEL PROGRAMA"};
     int opcion;
     char salirDelPrograma = 'N';
 
@@ -40,15 +39,15 @@ int main()
 
     while(salirDelPrograma == 'N')
     {
-        ejecutarEnConsola(LIMPIAR_PANTALLA);
+        limpiarPantalla();
         opcion = eMenu_pedirOpcion(&menuPrincipal);
         switch(opcion)
         {
             case 1:
-
+                eEmail_gestionCargarDestinatarios(destinatarios);
                 break;
             case 2:
-
+                eEmail_gestionCargarBlacklist(blacklist);
                 break;
             case 3:
 

@@ -31,10 +31,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="Archivo.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Archivo.h" />
 		<Unit filename="ArrayList.c">
 			<Option compilerVar="CC" />
 		</Unit>

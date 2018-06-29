@@ -59,39 +59,39 @@ int eEmail_setEmail(eEmail* this, char* email)
 /**************************** CONSTRUCTORES ******************************************************/
 eEmail* eEmail_new(void)
 {
-   eEmail* newPerson;
+   eEmail* newEmail;
 
-   newPerson = (eEmail*)malloc(sizeof(eEmail));
-   if(newPerson != NULL)
+   newEmail = (eEmail*)malloc(sizeof(eEmail));
+   if(newEmail != NULL)
    {
-      newPerson->print     = eEmail_printOne;
+      newEmail->print     = eEmail_printOne;
 
       //getters
-      newPerson->getUser   = eEmail_getUser;
-      newPerson->getEmail  = eEmail_getEmail;
+      newEmail->getUser   = eEmail_getUser;
+      newEmail->getEmail  = eEmail_getEmail;
 
       //setters
-      newPerson->setUser   = eEmail_setUser;
-      newPerson->setEmail  = eEmail_setEmail;
+      newEmail->setUser   = eEmail_setUser;
+      newEmail->setEmail  = eEmail_setEmail;
    }
 
-   return newPerson;
+   return newEmail;
 }
 //-----------------------------------------------------------------------------------------------//
 eEmail* eEmail_newParam(char* user,
                         char* email)
 {
-    eEmail* newPerson;
+    eEmail* newEmail;
 
-    newPerson = eEmail_new();
+    newEmail = eEmail_new();
 
-    if(newPerson != NULL)
+    if(newEmail != NULL)
    {
-      newPerson->setUser(newPerson, user);
-      newPerson->setEmail(newPerson, email);
+      newEmail->setUser(newEmail, user);
+      newEmail->setEmail(newEmail, email);
    }
 
-    return newPerson;
+    return newEmail;
 }
 //-----------------------------------------------------------------------------------------------//
 
@@ -103,7 +103,7 @@ int eEmail_listIsEmpty(ArrayList* this)
 
    if(this != NULL)
    {
-      returnAux = this->isEmpty();
+      returnAux = this->isEmpty(this);
    }
    return returnAux;
 }
@@ -116,7 +116,7 @@ int eEmail_listIsEmptyLegend(ArrayList* this)
    {
       returnAux = eEmail_listIsEmpty(this);
 
-      if(returnAux == EMPTY)
+      if(returnAux)
       {
          imprimirEnPantalla(EMAIL_MSJ_EMPTY_LIST);
       }
@@ -125,22 +125,22 @@ int eEmail_listIsEmptyLegend(ArrayList* this)
    return returnAux;
 }
 //-----------------------------------------------------------------------------------------------//
-eEmail* eEmail_getByEmail(ArrayList* this, int email)
+eEmail* eEmail_getByEmail(ArrayList* this, char* email)
 {
    eEmail* oneEmail;
-   eEmail* returnPerson = NULL;
+   eEmail* returnEmail = NULL;
 
    for(int i=0; i<this->len(this) ; i++)
    {
       oneEmail = this->get(this, i);
 
-      if(!strcmp(oneEmail->getEmail(oneEmail),email))
+      if(!strcmp(oneEmail->getEmail(oneEmail), email))
       {
-         returnPerson = oneEmail;
+         returnEmail = oneEmail;
          break;
       }
    }
-   return returnPerson;
+   return returnEmail;
 }
 //-----------------------------------------------------------------------------------------------//
 
@@ -176,7 +176,13 @@ void eEmail_gestionListar(ArrayList* this)
 
    if(!eEmail_listIsEmptyLegend(this))
    {
-      this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
+//      this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
+
+      for(int i=0 ; i<this->len(this) ; i++)
+      {
+         eEmail_printOne(this->get(this,i), EMAIL_PRINT_MASK);
+      }
+
    }
    pausa();
 }
@@ -187,8 +193,7 @@ void eEmail_gestionOrdenar(ArrayList* this)
 
    if(!eEmail_listIsEmptyLegend(this))
    {
-      eEmail_sortByDni(this);
-      //eEmail_sortByUser(this);
+      eEmail_sortByEmail(this);
       imprimirEnPantalla(EMAIL_MSJ_ORDEN_OK);
    }
    pausa();
@@ -197,43 +202,107 @@ void eEmail_gestionOrdenar(ArrayList* this)
 
 
 
-/**************************** ALTA ***************************************************************/
-int eEmail_gestionAlta(ArrayList* this)
+
+
+/**************************** CARGAR ARCHIVO *****************************************************/
+#define EMAIL_MASCARA_ARCHIVO "%[^,],%[^\n]\n"
+#define CAMPOS_A_LEER 2
+
+int eEmail_gestionCargarArchivo(ArrayList* this)
 {
    int returnAux = CHECK_POINTER;
-   eEmail* registro;
-   char confirmacion;
+   eEmail* registro = eEmail_new();
+   char* user = constructorString(100);
+   char* email = constructorString(100);
+   int cantCamposLeidos;
+   int huboErrorAddRegistro;
+   int leidosOk = 0;
+   int leidosError = 0;
+   FILE* pFile;
+   char* ruta;
+
+   if(registro != NULL && user != NULL && email != NULL)
+   {
+      returnAux = OK;
+
+      ruta = constructorStringParametrizado("\nIngrese ruta de archivo: ", "\nReingrese ruta de archivo: ", 255);
+
+      pFile = fopen(ruta, "r");
+
+      if(pFile == NULL)
+      {
+         printf("\nNo pudo abrirse el archivo %s ", ruta);
+      }
+      else
+      {
+         if(!this->isEmpty(this))
+         {
+            //limpio lista si no esta vacia
+            this->clear(this);
+         }
+
+         cantCamposLeidos = fscanf(pFile, EMAIL_MASCARA_ARCHIVO, user, email);
+
+         while(!feof(pFile))
+         {
+            if(feof(pFile))
+            {
+               break;
+            }
+
+            if(cantCamposLeidos == CAMPOS_A_LEER)
+            {
+               huboErrorAddRegistro = 0;
+               huboErrorAddRegistro += registro->setUser(registro, user);
+               huboErrorAddRegistro += registro->setEmail(registro, email);
+               printf("\n%s | %s", user, email);
+
+               if(!huboErrorAddRegistro)
+               {
+                  this->add(this, registro);
+                  leidosOk++;
+               }
+               else
+               {
+                  leidosError++;
+               }
+            }
+            else
+            {
+               leidosError++;
+            }
+
+            cantCamposLeidos = fscanf(pFile, EMAIL_MASCARA_ARCHIVO, user, email);
+         }
+
+         printf("\nSe leyo un archivo desde la ruta %s", ruta);
+         printf("\nSe cargaron %d registros.", leidosOk);
+         if(!leidosError)
+         {
+            printf("\nHubo errores con %d registros.", leidosError);
+         }
+      }
+   }
+   return returnAux;
+}
+//-----------------------------------------------------------------------------------------------//
+
+/**************************** DESTINATARIOS ******************************************************/
+#define EMAIL_CARGA_DESTINATARIOS_TITULO "CARGA ARCHIVO DESTINATARIOS"
+
+int eEmail_gestionCargarDestinatarios(ArrayList* this)
+{
+   int returnAux = CHECK_POINTER;
 
    if(this != NULL)
    {
       returnAux = OK;
-      limpiarPantallaYMostrarTitulo(EMAIL_ALTA_TITULO);
 
-      registro = eEmail_askInput();
+      limpiarPantallaYMostrarTitulo(EMAIL_CARGA_DESTINATARIOS_TITULO);
 
-      if(!eEmail_getByDni(this, registro->getDni(registro)))
-      {
-        printf(EMAIL_MSJ_DNI_YA_EXISTE, registro->getDni(registro));
-      }
-      else
-      {
-         limpiarPantallaYMostrarTitulo(EMAIL_ALTA_TITULO);
-         imprimirEnPantalla(EMAIL_PRINT_MASK_CABECERA);
-         registro->print(registro);
+      returnAux = eEmail_gestionCargarArchivo(this);
+      eEmail_sortByEmail(this);
 
-         confirmacion = pedirConfirmacion(MSJ_CONFIRMA_CORRECTOS);
-
-         if(confirmacion == 'S')
-         {
-           this->add(this, registro);
-           eEmail_sortByDni(this);
-           imprimirEnPantalla(EMAIL_MSJ_ALTA_OK);
-         }
-         else
-         {
-           imprimirEnPantalla(MSJ_CANCELO_GESTION);
-         }
-      }
       pausa();
    }
    return returnAux;
@@ -241,81 +310,33 @@ int eEmail_gestionAlta(ArrayList* this)
 //-----------------------------------------------------------------------------------------------//
 
 
-/**************************** BAJA DE REGISTRO ****************************************************/
-int eEmail_gestionBaja(ArrayList* this)
+/**************************** BLACKLIST **********************************************************/
+#define EMAIL_CARGA_BLACKLIST_TITULO "CARGA ARCHIVO BLACKLIST"
+
+int eEmail_gestionCargarBlacklist(ArrayList* this)
 {
    int returnAux = CHECK_POINTER;
-   eEmail* oneEmail;
-   char confirmacion;
 
    if(this != NULL)
    {
-      returnAux = CHECK_IS_EMPTY;
-      limpiarPantallaYMostrarTitulo(EMAIL_BAJA_TITULO);
+      returnAux = OK;
 
-      if(!eEmail_listIsEmptyLegend(this))
-      {
-         returnAux = OK;
+      limpiarPantallaYMostrarTitulo(EMAIL_CARGA_BLACKLIST_TITULO);
 
-         oneEmail = eEmail_getByAskId(this);
+      returnAux = eEmail_gestionCargarArchivo(this);
+      eEmail_sortByEmail(this);
 
-         limpiarPantallaYMostrarTitulo(EMAIL_BAJA_TITULO);
-         imprimirEnPantalla(EMAIL_PRINT_MASK_CABECERA);
-         oneEmail->print(oneEmail);
-
-         confirmacion = pedirConfirmacion(EMAIL_MSJ_CONFIRMAR_BAJA);
-
-         if(confirmacion == 'S')
-         {
-            oneEmail->setIsEmpty(oneEmail, EMAIL_EMPTY);
-            imprimirEnPantalla(EMAIL_MSJ_BAJA_OK);
-         }
-         else
-         {
-            imprimirEnPantalla(MSJ_CANCELO_GESTION);
-         }
-      }
-
+      pausa();
    }
-   pausa();
    return returnAux;
 }
 //-----------------------------------------------------------------------------------------------//
 
 
 /**************************** ORDENAMIENTO *******************************************************/
-int eEmail_compareByDni(void* pPersonA, void* pPersonB)
+int eEmail_compareByUser(void* pA,void* pB)
 {
-   int returnAux = 0;
-
-   if(((eEmail*)pPersonA)->getDni(pPersonA) > ((eEmail*)pPersonB)->getDni(pPersonB))
-   {
-      returnAux = 1;
-   }
-   else if(((eEmail*)pPersonA)->getDni(pPersonA) < ((eEmail*)pPersonB)->getDni(pPersonB))
-   {
-      returnAux = -1;
-   }
-
-   return returnAux;
-}
-//-----------------------------------------------------------------------------------------------//
-int eEmail_compareByUser(void* pPersonA,void* pPersonB)
-{
-   return strcmp(((eEmail*)pPersonA)->user, ((eEmail*)pPersonB)->user);
-}
-//-----------------------------------------------------------------------------------------------//
-int eEmail_sortByDni(ArrayList* this)
-{
-   int returnAux = CHECK_POINTER;
-
-   if(this!=NULL)
-   {
-      returnAux = OK;
-      this->sort(this, eEmail_compareByDni, EMAIL_ORDEN_ASC);
-   }
-
-   return returnAux;
+   return strcmp(((eEmail*)pA)->user, ((eEmail*)pB)->user);
 }
 //-----------------------------------------------------------------------------------------------//
 int eEmail_sortByUser(ArrayList* this)
@@ -326,6 +347,24 @@ int eEmail_sortByUser(ArrayList* this)
    {
       returnAux = OK;
       this->sort(this, eEmail_compareByUser, EMAIL_ORDEN_ASC);
+   }
+
+   return returnAux;
+}
+//-----------------------------------------------------------------------------------------------//
+int eEmail_compareByEmail(void* pA,void* pB)
+{
+   return strcmp(((eEmail*)pA)->user, ((eEmail*)pB)->user);
+}
+//-----------------------------------------------------------------------------------------------//
+int eEmail_sortByEmail(ArrayList* this)
+{
+   int returnAux = CHECK_POINTER;
+
+   if(this!=NULL)
+   {
+      returnAux = OK;
+      this->sort(this, eEmail_compareByEmail, EMAIL_ORDEN_ASC);
    }
 
    return returnAux;

@@ -29,7 +29,7 @@
 #define EMAIL_PAGESIZE 20
 
 /**************************** MASCARAS ***********************************************************/
-#define EMAIL_PRINT_MASK "\n%s \t\t %s"
+#define EMAIL_PRINT_MASK "\n%-20s %-20s"
 #define EMAIL_PARSE_MASK "%[^,],%[^,],%[^\n]\n"
 #define EMAIL_LISTADO_RECUENTO "\n%d registros."
 
@@ -73,7 +73,7 @@
 #define EMAIL_MSJ_REINGRESE_LAST_NAME "\nApellido no valido. Reingrese por favor hasta 50 caracteres: "
 
 /**************************** LISTADOS ***********************************************************/
-#define EMAIL_PRINT_MASK_CABECERA "\nUSER \t\t EMAIL\n---- \t\t -----\n"
+#define EMAIL_PRINT_MASK_CABECERA "\nUSER \t EMAIL\n---- \t -----\n"
 #define EMAIL_PAGESIZE 20
 
 /**************************** ORDENAMIENTO *******************************************************/
@@ -86,7 +86,7 @@ struct
    char user[EMAIL_LENGTH_USER];
    char email[EMAIL_LENGTH_EMAIL];
 
-   void (*print)();
+   int (*print)();
 
     //getters
    char* (*getUser)();
@@ -126,8 +126,10 @@ void eEmail_gestionParse(ArrayList* this);
 void eEmail_gestionListar(ArrayList* this);
 void eEmail_gestionListarDesdeHasta(ArrayList* this);
 void eEmail_gestionOrdenar(ArrayList* this);
-int eEmail_gestionAlta(ArrayList* this);
-int eEmail_gestionBaja(ArrayList* this);
+int eEmail_gestionCargarArchivo(ArrayList* this);
+int eEmail_gestionCargarDestinatarios(ArrayList* this);
+int eEmail_gestionCargarBlacklist(ArrayList* this);
+int eEmail_gestionDepurar(ArrayList* thisDestinatarios, ArrayList* thisBlacklist, ArrayList* thisDepurados);
 
 /**************************** ORDENAMIENTO *******************************************************/
 int eEmail_compareByUser(void* pEmailA, void* pEmailB);

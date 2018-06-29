@@ -607,7 +607,7 @@ int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc
    {
       imprimirEnPantalla(title);
 
-      for(int i=0 ; i<this->len(this) ; i++)
+      for(int i=from ; i<to ; i++)
       {
          pElementAux = this->get(this,i);
 
