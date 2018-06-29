@@ -177,11 +177,17 @@ void eEmail_gestionListar(ArrayList* this)
    if(!eEmail_listIsEmptyLegend(this))
    {
 //      this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
+      printf("\nposicion 0: %s", ((eEmail*)this->get(this,0))->email );
+      printf("\nposicion 1: %s", ((eEmail*)this->get(this,1))->email );
+      printf("\nposicion 2: %s", ((eEmail*)this->get(this,2))->email );
+      printf("\nposicion 3: %s", ((eEmail*)this->get(this,3))->email );
 
-      for(int i=0 ; i<this->len(this) ; i++)
-      {
-         eEmail_printOne(this->get(this,i), EMAIL_PRINT_MASK);
-      }
+
+//      printf("\nsize %d", this->len(this));
+//      for(int i=0 ; i<this->len(this) ; i++)
+//      {
+//         eEmail_printOne(this->get(this,i), EMAIL_PRINT_MASK);
+//      }
 
    }
    pausa();
@@ -255,10 +261,11 @@ int eEmail_gestionCargarArchivo(ArrayList* this)
                huboErrorAddRegistro = 0;
                huboErrorAddRegistro += registro->setUser(registro, user);
                huboErrorAddRegistro += registro->setEmail(registro, email);
-               printf("\n%s | %s", user, email);
+//               printf("\n%s | %s", user, email);
 
                if(!huboErrorAddRegistro)
                {
+                  eEmail_printOne(registro, EMAIL_PRINT_MASK);
                   this->add(this, registro);
                   leidosOk++;
                }
@@ -301,7 +308,7 @@ int eEmail_gestionCargarDestinatarios(ArrayList* this)
       limpiarPantallaYMostrarTitulo(EMAIL_CARGA_DESTINATARIOS_TITULO);
 
       returnAux = eEmail_gestionCargarArchivo(this);
-      eEmail_sortByEmail(this);
+      //eEmail_sortByEmail(this);
 
       pausa();
    }
