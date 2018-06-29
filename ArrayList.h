@@ -234,12 +234,12 @@ int expand(ArrayList* this,int index);
  */
 int contract(ArrayList* this,int index);
 
-int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, void*), char* title, char* mask);
-
-int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, void*), char* title, char* mask);
-
 // Private function
 int resizeUp(ArrayList* this);
 int expand(ArrayList* this,int index);
 int contract(ArrayList* this,int index);
 //___________________
+
+int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask);
+
+int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask);

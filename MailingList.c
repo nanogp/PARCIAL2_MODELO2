@@ -1,6 +1,6 @@
 /**************************** INCLUSION DE EMPTYRIAS EMAILALES **********************************/
 #include "ArrayList.h"
-#include "Person.h"
+#include "MailingList.h"
 #include "Menu.h"
 /**************************** INCLUSION DE EMPTYRIAS ESTANDAR ************************************/
 #include <stdio.h>
@@ -64,15 +64,15 @@ eEmail* eEmail_new(void)
    newPerson = (eEmail*)malloc(sizeof(eEmail));
    if(newPerson != NULL)
    {
-      newPerson->print            = eEmail_printOne;
+      newPerson->print     = eEmail_printOne;
 
-       //getters
-      newPerson->getUser          = eEmail_getUser;
-      newPerson->getEmail         = eEmail_getEmail;
+      //getters
+      newPerson->getUser   = eEmail_getUser;
+      newPerson->getEmail  = eEmail_getEmail;
 
-       //setters
-      newPerson->setUser          = eEmail_setUser;
-      newPerson->setEmail      = eEmail_setEmail;
+      //setters
+      newPerson->setUser   = eEmail_setUser;
+      newPerson->setEmail  = eEmail_setEmail;
    }
 
    return newPerson;
@@ -134,7 +134,7 @@ eEmail* eEmail_getByEmail(ArrayList* this, int email)
    {
       oneEmail = this->get(this, i);
 
-      if(oneEmail->getEmail(oneEmail) == email)
+      if(!strcmp(oneEmail->getEmail(oneEmail),email))
       {
          returnPerson = oneEmail;
          break;
@@ -146,37 +146,19 @@ eEmail* eEmail_getByEmail(ArrayList* this, int email)
 
 
 /**************************** LISTADO DE DATOS ***************************************************/
-void eEmail_printOne(eEmail* this)
+int eEmail_printOne(void* this, char* mask)
 {
-   printf(EMAIL_PRINT_MASK,
-          this->getUser(this),
-          this->getEmail(this));
-}
-//-----------------------------------------------------------------------------------------------//
-int eEmail_printList(ArrayList* this, int pageSize)
-{
-   eEmail* oneEmail;
-   int count = 0;
+   int returnAux = 0;
 
-   imprimirEnPantalla(EMAIL_PRINT_MASK_CABECERA);
-
-   for(int i=0 ; i<this->len(this) ; i++)
+   if(this != NULL)
    {
-      oneEmail = this->get(this,i);
-
-      if(!eEmail_isEmpty(oneEmail))
-      {
-         oneEmail->print(oneEmail);
-         count++;
-
-         if(count%pageSize == 0)
-         {
-            pausa();
-            imprimirEnPantalla(EMAIL_PRINT_MASK_CABECERA);
-         }
-      }
+      printf(mask,
+            ((eEmail*)this)->getUser(this),
+            ((eEmail*)this)->getEmail(this));
+      returnAux = 1;
    }
-   return count;
+
+   return returnAux;
 }
 //-----------------------------------------------------------------------------------------------//
 
@@ -194,30 +176,7 @@ void eEmail_gestionListar(ArrayList* this)
 
    if(!eEmail_listIsEmptyLegend(this))
    {
-      eEmail_printList(this, EMAIL_PRINT_PAGESIZE);
-   }
-   pausa();
-}
-//-----------------------------------------------------------------------------------------------//
-void eEmail_gestionListarDesdeHasta(ArrayList* this)
-{
-   int desde;
-   int hasta;
-
-   limpiarPantallaYMostrarTitulo(EMAIL_LISTADO_RANGO_TITULO);
-
-   if(!eEmail_listIsEmptyLegend(this))
-   {
-      imprimirEnPantalla(EMAIL_LISTADO_RANGO_INGRESO);
-      pedirRangoIntValido(EMAIL_MSJ_INGRESE_ID,
-                          EMAIL_MSJ_REINGRESE_ID,
-                          EMAIL_ID_MIN,
-                          EMAIL_ID_MAX,
-                          &desde,
-                          &hasta);
-
-      limpiarPantallaYMostrarTitulo(EMAIL_LISTADO_RANGO_TITULO);
-      eEmail_printListFromTo(this, desde, hasta, EMAIL_PRINT_PAGESIZE);
+      this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
    }
    pausa();
 }

@@ -18,15 +18,15 @@
 #define EMAIL_PRINT_PAGESIZE 1000
 
 /**************************** LIMITES ************************************************************/
-#define EMAIL_LENGTH_NAME 51
-#define EMAIL_LENGTH_LAST_NAME 51
+#define EMAIL_LENGTH_USER 51
+#define EMAIL_LENGTH_EMAIL 51
 #define EMAIL_ID_MIN 1
 #define EMAIL_ID_MAX 1000000
 #define EMAIL_DNI_MIN 1
 #define EMAIL_DNI_MAX 1000000
 #define EMAIL_STATS_MIN 1
 #define EMAIL_STATS_MAX 1000000
-#define EMAIL_LENGTH_RESERVAS 10
+#define EMAIL_PAGESIZE 20
 
 /**************************** MASCARAS ***********************************************************/
 #define EMAIL_PRINT_MASK "\n%s \t\t %s"
@@ -73,7 +73,8 @@
 #define EMAIL_MSJ_REINGRESE_LAST_NAME "\nApellido no valido. Reingrese por favor hasta 50 caracteres: "
 
 /**************************** LISTADOS ***********************************************************/
-#define EMAIL_PRINT_MASK_CABECERA "\nID \t DNI \t NAME \t\t LAST_NAME \t\t ES VACIO\n-- \t ------ \t\t -------- \t\t --------"
+#define EMAIL_PRINT_MASK_CABECERA "\nUSER \t\t EMAIL\n---- \t\t -----\n"
+#define EMAIL_PAGESIZE 20
 
 /**************************** ORDENAMIENTO *******************************************************/
 #define EMAIL_ORDEN_ASC 1
@@ -83,7 +84,7 @@
 struct
 {
    char user[EMAIL_LENGTH_USER];
-   char email[EMAIL_LENGTH_MAIL];
+   char email[EMAIL_LENGTH_EMAIL];
 
    void (*print)();
 
@@ -111,14 +112,13 @@ eEmail* eEmail_newParam(char* user,
                           char* email);
 
 /**************************** BUSQUEDA ***********************************************************/
-int eEmail_listIsEmpty(ArrayList* this)
+int eEmail_listIsEmpty(ArrayList* this);
 int eEmail_listIsEmptyLegend(ArrayList* this);
 eEmail* eEmail_getById(ArrayList* this, char* user);
 eEmail* eEmail_getByDni(ArrayList* this, char* email);
 
 /**************************** LISTADO DE DATOS ***************************************************/
-void eEmail_printOne(eEmail* this);
-int eEmail_printList(ArrayList* this, int pageSize);
+int eEmail_printOne(void* this, char* mask);
 
 /**************************** GESTION DE DATOS ***************************************************/
 void eEmail_delete(eEmail* this);
@@ -134,3 +134,5 @@ int eEmail_compareByUser(void* pEmailA, void* pEmailB);
 int eEmail_compareByEmail(void* pEmailA, void* pEmailB);
 int eEmail_sortByUser(ArrayList* this);
 int eEmail_sortByEmail(ArrayList* this);
+
+#endif // EMAIL_H_INCLUDED

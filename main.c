@@ -3,6 +3,7 @@
 #include "Menu.h"
 #include "ArrayList.h"
 #include "Archivo.h"
+#include "MailingList.h"
 
 
 /**************************** INCLUSION DE EMPTYRIAS ESTANDAR ************************************/
@@ -13,8 +14,8 @@ int main()
 {
    int returnAux = CHECK_POINTER;
    eMenu menuPrincipal = {/*titulo del menu*/{"PARCIAL 2, MODELO 2"},
-                          /*cantidad de opciones*/7,
-                          /*codigos*/{1,2,3,4,5,6,
+                          /*cantidad de opciones*/8,
+                          /*codigos*/{1,2,3,4,5,6,7,
                                       0},
                           /*descripciones*/"\n  1. CARGAR DESTINATARIOS"
                                            "\n  2. CARGAR LISTA NEGRA"
@@ -22,6 +23,7 @@ int main()
                                            "\n  4. LISTAR"
                                            "\n  5. lista 1"
                                            "\n  6. lista 2"
+                                           "\n  7. lista 3"
                                            "\n  0. Salir Del Programa"};
     int opcion;
     char salirDelPrograma = 'N';
@@ -52,16 +54,16 @@ int main()
 
                 break;
             case 4:
-
+                eEmail_gestionListar(depurados);
                 break;
             case 5:
-
+                eEmail_gestionListar(destinatarios);
                 break;
             case 6:
-
+                eEmail_gestionListar(blacklist);
                 break;
             case 7:
-
+                eEmail_gestionListar(depurados);
                 break;
             case 8:
 

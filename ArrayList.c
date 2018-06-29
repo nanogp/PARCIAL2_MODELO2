@@ -50,6 +50,8 @@ ArrayList* al_newArrayList(void)
          this->containsAll=al_containsAll;
          this->deleteArrayList = al_deleteArrayList;
          this->sort = al_sort;
+         this->print = al_print;
+         this->printSubList = al_printSubList;
          returnAux = this;
       }
       else
@@ -591,12 +593,17 @@ int contract(ArrayList* this, int index)
    return returnAux;
 }
 
-int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, void*), char* title, char* mask)
+int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask)
 {
    int count = 0;
    void* pElementAux;
 
-   if(this != NULL && from >= 0 && to <= this->len(this) && from <= to && (*pFunc)(void*, void*) != NULL && title != NULL && mask != NULL)
+   if(this != NULL &&
+      from >= 0 && to <= this->len(this) &&
+      from <= to &&
+      (*pFunc) != NULL &&
+      title != NULL &&
+      mask != NULL)
    {
       imprimirEnPantalla(title);
 
@@ -606,8 +613,7 @@ int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc
 
          if(pElementAux != NULL)
          {
-            (*pFunc)(pElementAux, mask);
-            count++;
+            count += (*pFunc)(pElementAux, mask);
 
             if(count%pageSize == 0)
             {
@@ -616,15 +622,17 @@ int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc
             }
          }
       }
+   }
    return count;
 }
 
-int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, void*), char* title, char* mask)
+int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask)
 {
    int returnAux = -1;
 
-   if(this != NULL && (*pFunc) != NULL && title != NULL && mask != NULL)
+   if(this != NULL && (pFunc) != NULL && title != NULL && mask != NULL)
    {
-      returnAux = this->printSubList(this, 0, this->len(this), pageSize, (*pFunc), title, mask)
+      returnAux = this->printSubList(this, 0, this->len(this), pageSize, (pFunc), title, mask);
    }
+   return returnAux;
 }
