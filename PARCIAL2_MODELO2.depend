@@ -8,13 +8,13 @@
 1530206962 d:\github\parcial2_modelo2\archivo.h
 	<stdio.h>
 
-1530293700 source:d:\github\parcial2_modelo2\arraylist.c
+1530299110 source:d:\github\parcial2_modelo2\arraylist.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"ArrayList.h"
 
-1530230531 d:\github\parcial2_modelo2\arraylist.h
+1530295489 d:\github\parcial2_modelo2\arraylist.h
 	"General.h"
 
 1530288662 source:d:\github\parcial2_modelo2\general.c
@@ -32,7 +32,7 @@
 
 1529952509 d:\github\parcial2_modelo2\menu.h
 
-1530291574 source:d:\github\parcial2_modelo2\main.c
+1530299851 source:d:\github\parcial2_modelo2\main.c
 	"General.h"
 	"Menu.h"
 	"ArrayList.h"
@@ -45,7 +45,7 @@
 	"General.h"
 	"Menu.h"
 
-1530294084 source:d:\github\parcial2_modelo2\mailinglist.c
+1530299693 source:d:\github\parcial2_modelo2\mailinglist.c
 	"ArrayList.h"
 	"MailingList.h"
 	"Menu.h"

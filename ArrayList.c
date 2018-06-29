@@ -142,7 +142,7 @@ void* al_get(ArrayList* this, int index)
 {
    void* returnAux = NULL;
 
-   if(this != NULL && index >= 0 && index < this->len(this))
+   if(this != NULL && index >= 0 && index < this->len(this) && this->pElements != NULL)
    {
       returnAux = *(this->pElements+index);
    }
@@ -593,19 +593,15 @@ int contract(ArrayList* this, int index)
    return returnAux;
 }
 
-int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask)
+int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc)(void*, char*), char* header, char* mask)
 {
+   int returnAux = -1;
    int count = 0;
    void* pElementAux;
 
-   if(this != NULL &&
-      from >= 0 && to <= this->len(this) &&
-      from <= to &&
-      (*pFunc) != NULL &&
-      title != NULL &&
-      mask != NULL)
+   if(this != NULL && from >= 0 && to <= this->len(this) && from <= to && (*pFunc) != NULL && header != NULL && mask != NULL)
    {
-      imprimirEnPantalla(title);
+      imprimirEnPantalla(header);
 
       for(int i=from ; i<to ; i++)
       {
@@ -613,26 +609,27 @@ int al_printSubList(ArrayList* this, int from, int to, int pageSize, int (*pFunc
 
          if(pElementAux != NULL)
          {
-            count += (*pFunc)(pElementAux, mask);
+            (*pFunc)(pElementAux, mask);
+            count++;
 
             if(count%pageSize == 0)
             {
                pausa();
-               imprimirEnPantalla(title);
+               imprimirEnPantalla(header);
             }
          }
       }
    }
-   return count;
+   return returnAux;
 }
 
-int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, char*), char* title, char* mask)
+int al_print(ArrayList* this, int pageSize, int (*pFunc)(void*, char*), char* header, char* mask)
 {
    int returnAux = -1;
 
-   if(this != NULL && (pFunc) != NULL && title != NULL && mask != NULL)
+   if(this != NULL && (pFunc) != NULL && header != NULL && mask != NULL)
    {
-      returnAux = this->printSubList(this, 0, this->len(this), pageSize, (pFunc), title, mask);
+      returnAux = this->printSubList(this, 0, this->len(this), pageSize, (pFunc), header, mask);
    }
    return returnAux;
 }

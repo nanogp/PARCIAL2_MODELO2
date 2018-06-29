@@ -148,14 +148,14 @@ eEmail* eEmail_getByEmail(ArrayList* this, char* email)
 /**************************** LISTADO DE DATOS ***************************************************/
 int eEmail_printOne(void* this, char* mask)
 {
-   int returnAux = 0;
+   int returnAux = CHECK_POINTER;
 
    if(this != NULL)
    {
+      returnAux = OK;
       printf(mask,
             ((eEmail*)this)->getUser(this),
             ((eEmail*)this)->getEmail(this));
-      returnAux = 1;
    }
 
    return returnAux;
@@ -174,23 +174,13 @@ void eEmail_gestionListar(ArrayList* this)
 {
    limpiarPantallaYMostrarTitulo(EMAIL_LISTADO_TITULO);
 
-   if(!eEmail_listIsEmptyLegend(this))
-   {
-//      this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
-      printf("\nposicion 0: %s", ((eEmail*)this->get(this,0))->email );
-      printf("\nposicion 1: %s", ((eEmail*)this->get(this,1))->email );
-      printf("\nposicion 2: %s", ((eEmail*)this->get(this,2))->email );
-      printf("\nposicion 3: %s", ((eEmail*)this->get(this,3))->email );
-
-
-//      printf("\nsize %d", this->len(this));
-//      for(int i=0 ; i<this->len(this) ; i++)
-//      {
-//         eEmail_printOne(this->get(this,i), EMAIL_PRINT_MASK);
-//      }
-
-   }
-   pausa();
+   if(this != NULL)
+    {
+      if(eEmail_listIsEmptyLegend(this) == 0)
+      {
+         this->print(this, EMAIL_PAGESIZE, eEmail_printOne,EMAIL_PRINT_MASK_CABECERA,EMAIL_PRINT_MASK);
+      }
+    }
 }
 //-----------------------------------------------------------------------------------------------//
 void eEmail_gestionOrdenar(ArrayList* this)
@@ -217,7 +207,7 @@ void eEmail_gestionOrdenar(ArrayList* this)
 int eEmail_gestionCargarArchivo(ArrayList* this)
 {
    int returnAux = CHECK_POINTER;
-   eEmail* registro = eEmail_new();
+   eEmail* registro;
    char* user = constructorString(100);
    char* email = constructorString(100);
    int cantCamposLeidos;
@@ -227,7 +217,7 @@ int eEmail_gestionCargarArchivo(ArrayList* this)
    FILE* pFile;
    char* ruta;
 
-   if(registro != NULL && user != NULL && email != NULL)
+   if(user != NULL && email != NULL)
    {
       returnAux = OK;
 
@@ -258,10 +248,17 @@ int eEmail_gestionCargarArchivo(ArrayList* this)
 
             if(cantCamposLeidos == CAMPOS_A_LEER)
             {
-               huboErrorAddRegistro = 0;
-               huboErrorAddRegistro += registro->setUser(registro, user);
-               huboErrorAddRegistro += registro->setEmail(registro, email);
-//               printf("\n%s | %s", user, email);
+               registro = eEmail_new();
+               if(registro != NULL)
+               {
+                  huboErrorAddRegistro = 0;
+                  huboErrorAddRegistro += registro->setUser(registro, user);
+                  huboErrorAddRegistro += registro->setEmail(registro, email);
+               }
+               else
+               {
+                  huboErrorAddRegistro = 1;
+               }
 
                if(!huboErrorAddRegistro)
                {
